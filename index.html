@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Elevate Lab Task 7</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Elevate Lab Task 7</h1>
+        <p>User data from a public API</p>
+        <br />
+        <button class="btn" id="btn">Reload</button>
+      </div>
+      <div class="users">
+        <div class="user">
+          <table class="table" id="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Address</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <span class="message" id="message">No Users Found!</span>
+      </div>
+    </div>
+
+    <script>
+      const url = "https://jsonplaceholder.typicode.com/users";
+      const url2 = "https://jsonplaceholder.typicode.com/users";
+      const tableBody = document.querySelector(".table tbody");
+      const message = document.getElementById("message");
+      const table = document.getElementById("table");
+      const button = document.getElementById("btn");
+
+      button.addEventListener("click", () => {
+        button.disabled = true;
+        button.textContent = "Loading...";
+        fetchUsers(url2).then(() => {
+          button.disabled = false;
+          button.textContent = "Reload";
+        });
+      });
+
+      function addUser(user) {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${user.id}</td>
+            <td>${user.name}</td>
+            <td>${user.email}</td>
+            <td>${user.address.city}, ${user.address.street}</td>
+            `;
+
+        tableBody.appendChild(row);
+      }
+
+      function renderUsers(users) {
+        tableBody.innerHTML = "";
+        if (users.length === 0) {
+          message.style.display = "block";
+          table.style.display = "none";
+        } else {
+          message.style.display = "none";
+          table.style.display = "block";
+        }
+        users.forEach((user) => {
+          addUser(user);
+        });
+      }
+
+      async function fetchUsers(url) {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) {
+            throw new Error(`HTTP error! Status: ${res.status}`);
+          }
+
+          const data = await res.json();
+          console.log(data);
+          renderUsers(data);
+        } catch (error) {
+          console.error("Error while fetching data:", error.message);
+          message.innerText = "Error fetching users!";
+          message.style.display = "block";
+          table.style.display = "none";
+        }
+      }
+
+      fetchUsers(url);
+    </script>
+  </body>
+</html>
